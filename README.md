@@ -1,8 +1,8 @@
 # Agent Email for Cloudflare
 
-**Agent Email for Cloudflare** gives coding agents a private, temporary email address they can enter during trusted workflows and check through Cloudflare MCP.
+**Agent Email for Cloudflare** gives agents a private, temporary email address they can use during trusted workflows.
 
-Incoming messages are indexed in [Cloudflare D1][d1] and stored as complete parsed and raw messages in [Cloudflare R2][r2]. A scheduled Worker deletes messages after 24 hours. The inbox has no public HTTP endpoint.
+Incoming messages are indexed in [<nobr>Cloudflare D1</nobr>][d1] and stored as complete parsed and raw messages in [<nobr>Cloudflare R2</nobr>][r2]. A scheduled Worker deletes messages after a minimum of 24 hours. The inbox has no public HTTP endpoint.
 
 ## Deploy to Cloudflare
 
@@ -69,7 +69,7 @@ Use `npx wrangler email routing list` to find a suitable domain with Email Routi
 After deployment:
 
 1. Verify the Email Routing rule sends the chosen address to the Worker.
-2. Verify the Worker, automatically provisioned D1 database and R2 bucket, and automatic 24-hour cleanup.
+2. Verify the Worker, automatically provisioned D1 database and R2 bucket, and automatic daily cleanup after the configured minimum retention period.
 3. Use Cloudflare MCP to discover the deployed address and backing resources without relying on hardcoded account IDs, database IDs, bucket names, or domains.
 4. Explain how a coding agent can enter or provide the discovered address, trigger an expected email, query D1 for current messages, and fetch complete parsed or raw content from R2 through Cloudflare MCP.
 5. Install or use the repository’s included `check-agent-email` skill to guide Codex and Claude Code in the use of Cloudflare MCP to check and read email.
@@ -81,7 +81,8 @@ After deployment:
 - **Email Worker:** receives and parses mail sent through Cloudflare Email Routing.
 - **D1:** indexes sender, recipient, subject, body preview, object keys, and expiry.
 - **R2:** privately stores parsed `.json` and raw RFC 822 `.eml` messages.
-- **Cron Trigger:** runs every minute and deletes messages older than 24 hours.
+- **Cron Trigger:** runs daily at `00:00 UTC` and deletes expired messages.
+- **Retention:** `RETENTION_HOURS` sets the minimum message age before deletion and defaults to `24`.
 - **Cloudflare MCP:** discovers the mailbox and reads D1/R2 without a public inbox.
 
 ## Read With Cloudflare MCP
