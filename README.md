@@ -7,41 +7,51 @@ Incoming messages are indexed in [Cloudflare D1][d1] and stored as complete
 parsed and raw messages in [Cloudflare R2][r2]. A scheduled Worker deletes
 messages after 24 hours. The inbox has no public HTTP endpoint.
 
-## Deploy
+## Deploy to Cloudflare
 
-### Option 1: Coding Agent
-
-Give this prompt to a coding agent with authenticated [Wrangler][wrangler] and
-[Cloudflare MCP][cloudflare-mcp] access:
+### Suggested Prompt
 
 ```text
-Deploy https://github.com/andesco/agent-email-for-cloudflare as a private
-temporary email inbox.
+Use authenticated Wrangler to deploy this repository as a private temporary
+email inbox for a coding agent:
 
-Use authenticated Wrangler to clone and deploy the included Worker. Let Wrangler
-automatically provision and bind D1 and R2. Use Wrangler Email Routing commands
-to find a suitable enabled domain, create a literal agent email address, and
-route it to the Worker.
+https://github.com/andesco/agent-email-for-cloudflare
 
-After deployment, verify the Worker, routing rule, D1/R2 bindings, and 24-hour
-cleanup. Then use Cloudflare MCP to discover the mailbox and backing resources,
-query current messages in D1, and fetch complete parsed or raw messages from R2.
-Use the repository's included check-agent-email skill for future inbox checks.
+Clone the repository, run npm install, verify authentication with npx wrangler
+whoami, and deploy the included Worker with npm run deploy. Let Wrangler
+automatically provision and bind D1 and R2. Do not rebuild the Worker from
+scratch or manually create those resources.
+
+Use Wrangler Email Routing commands to find a suitable domain with Email Routing
+enabled, create a literal address for the agent, and route that address to the
+deployed Worker.
+
+After deployment:
+
+1. Verify the Email Routing rule sends the chosen address to the Worker.
+2. Verify the Worker, automatically provisioned D1 database and R2 bucket, and
+   automatic 24-hour cleanup.
+3. Use Cloudflare MCP to discover the deployed address and backing resources
+   without relying on hardcoded account IDs, database IDs, bucket names, or domains.
+4. Explain how a coding agent can enter or provide the discovered address, trigger
+   an expected email, query D1 for current messages, and fetch complete parsed or
+   raw content from R2 through Cloudflare MCP.
+5. Install or use the repository's included Cloudflare MCP-only
+   check-agent-email skill for Codex and Claude Code.
 ```
 
-Wrangler handles deployment, automatic resource provisioning, and [Email
-Routing][email-routing] setup. Cloudflare MCP handles mailbox discovery and
-reading messages.
-
-### Option 2: Deploy to Cloudflare
+### Cloudflare Dashboard
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/andesco/agent-email-for-cloudflare)
 
-This user-assisted browser flow creates a copy of the repository, deploys the
-Worker, and automatically provisions D1 and R2. After deployment, configure a
-literal Email Routing address to send mail to the Worker.
+Workers & Pages → [Create application](https://dash.cloudflare.com/?to=/:account/workers-and-pages/create/deploy-to-workers)
+→ Continue with GitHub → Clone a public repository via Git URL:
 
-### Option 3: Manual Deployment
+```text
+https://github.com/andesco/agent-email-for-cloudflare
+```
+
+### Wrangler CLI
 
 ```bash
 git clone https://github.com/andesco/agent-email-for-cloudflare.git
@@ -87,10 +97,6 @@ It instructs agents to use Cloudflare MCP to discover an available agent mailbox
 and its backing D1/R2 resources, then enter the discovered address and check for
 verification links, codes, replies, or other messages. It does not use Wrangler
 or local helper scripts.
-
-See [SUGGESTED_PROMPT.md](SUGGESTED_PROMPT.md) for a prompt that directs a coding
-agent to deploy the Worker and address, verify them, and explain how to check the
-inbox through Cloudflare MCP.
 
 ## Local Test
 
