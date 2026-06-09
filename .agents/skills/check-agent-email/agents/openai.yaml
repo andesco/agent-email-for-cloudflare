@@ -1,0 +1,4 @@
+interface:
+  display_name: "Check Agent Email"
+  short_description: "Check and read the temporary agent inbox"
+  default_prompt: "Use $check-agent-email and Cloudflare MCP to discover the temporary agent inbox and summarize current messages."
