@@ -2,7 +2,7 @@
 
 **Agent Email for Cloudflare** gives agents a private, temporary email address they can use during trusted workflows.
 
-Incoming messages are indexed in [<nobr>Cloudflare D1</nobr>][d1] and stored as complete parsed and raw messages in [<nobr>Cloudflare R2</nobr>][r2]. A scheduled Worker deletes messages after a minimum of 24 hours. The inbox has no public HTTP endpoint.
+Incoming messages are indexed in [Cloudflare&nbsp;D1][d1] and stored as complete parsed and raw messages in [Cloudflare&nbsp;R2][r2]. A scheduled Worker deletes messages after a minimum of 24 hours. The inbox has no public HTTP endpoint.
 
 ## Deploy to Cloudflare
 
