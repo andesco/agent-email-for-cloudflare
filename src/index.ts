@@ -1,5 +1,5 @@
 import PostalMime from "postal-mime";
-import { expiresAt, isExpired } from "./retention";
+import { expiresAt, isExpired, retentionHours } from "./retention";
 
 const MAX_INDEX_BODY_CHARS = 100_000;
 
@@ -95,7 +95,7 @@ async function storeEmail(message: ForwardableEmailMessage, env: Env): Promise<v
   await ensureSchema(env);
 
   const receivedAt = new Date();
-  const expiration = expiresAt(receivedAt);
+  const expiration = expiresAt(receivedAt, retentionHours(env.RETENTION_HOURS));
   const id = crypto.randomUUID();
   const prefix = `messages/${receivedAt.toISOString().replaceAll(":", "-")}-${id}`;
   const rawKey = `${prefix}.eml`;
@@ -182,6 +182,7 @@ async function storeEmail(message: ForwardableEmailMessage, env: Env): Promise<v
 async function deleteExpired(env: Env, now: Date): Promise<number> {
   await ensureSchema(env);
 
+  const hours = retentionHours(env.RETENTION_HOURS);
   let cursor: string | undefined;
   let deleted = 0;
 
@@ -192,7 +193,7 @@ async function deleteExpired(env: Env, now: Date): Promise<number> {
       limit: 1000,
     });
     const expiredKeys = page.objects
-      .filter((object) => isExpired(object.uploaded, now))
+      .filter((object) => isExpired(object.uploaded, now, hours))
       .map((object) => object.key);
 
     if (expiredKeys.length > 0) {

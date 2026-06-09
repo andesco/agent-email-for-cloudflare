@@ -5,6 +5,9 @@
   "compatibility_date": "2026-06-08",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
+  "vars": {
+    "RETENTION_HOURS": "24"
+  },
   "r2_buckets": [
     {
       "binding": "INBOX"

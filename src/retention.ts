@@ -1,9 +1,15 @@
-const RETENTION_MS = 24 * 60 * 60 * 1000;
+const DEFAULT_RETENTION_HOURS = 24;
+const HOUR_MS = 60 * 60 * 1000;
 
-export function expiresAt(receivedAt: Date): Date {
-  return new Date(receivedAt.getTime() + RETENTION_MS);
+export function retentionHours(value: string | undefined): number {
+  const hours = Number(value);
+  return Number.isFinite(hours) && hours > 0 ? hours : DEFAULT_RETENTION_HOURS;
 }
 
-export function isExpired(uploaded: Date, now: Date): boolean {
-  return uploaded.getTime() <= now.getTime() - RETENTION_MS;
+export function expiresAt(receivedAt: Date, hours = DEFAULT_RETENTION_HOURS): Date {
+  return new Date(receivedAt.getTime() + hours * HOUR_MS);
+}
+
+export function isExpired(uploaded: Date, now: Date, hours = DEFAULT_RETENTION_HOURS): boolean {
+  return uploaded.getTime() <= now.getTime() - hours * HOUR_MS;
 }
